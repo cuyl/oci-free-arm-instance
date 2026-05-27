@@ -112,13 +112,21 @@ jobs:
             ${{ steps.create_vm.outputs.log_data }}
             ```
       - name: Send Bark Notification
-        uses: harryzcy/action-bark@v2.3.3
-        with:
-            status: ${{ job.status }}
-            title: "oci-free-arm-instance"
-            group: "OCI Bot Status"
-            body: ${{ contains(steps.create_vm.outputs.log_data, 'Out of host capacity') && '⏳ Waiting for Capacity...' || contains(steps.create_vm.outputs.log_data, 'PROVISIONING') && '🚀 VM CREATED! DISABLE WORKFLOW!' || '❌ Error' }}
-            device_key: ${{ secrets.BARK_DEVICE_KEY }}
-            level: passive # iOS notification level 'active', 'timeSensitive' or 'passive', default to 'active'
-            bark_server_url: ${{ secrets.BARK_SERVER_URL }}
-        if: always() # Pick up events even if the job fails or is canceled.
+        if: always()
+        run: |
+          # Determine message based on OCI output
+          if echo "${{ steps.create_vm.outputs.log_data }}" | grep -q 'Out of host capacity'; then
+            BARK_BODY="⏳ Waiting for Capacity..."
+          elif echo "${{ steps.create_vm.outputs.log_data }}" | grep -q 'PROVISIONING'; then
+            BARK_BODY="🚀 VM CREATED!"
+          else
+            BARK_BODY="Status: ${{ job.status }}"
+          fi
+          
+          # URL encode the title and body
+          TITLE=$(jq -nRr --arg s "oci-free-arm-instance" '$s|@uri')
+          BODY=$(jq -nRr --arg s "${BARK_BODY}" '$s|@uri')
+          GROUP_NAME=$(jq -nRr --arg s "oci-free-arm-instance" '$s|@uri')
+          
+          # Send notification via curl
+          curl "${{ secrets.BARK_SERVER_URL }}/${{ secrets.BARK_DEVICE_KEY }}/${TITLE}/${BODY}?group=${GROUP_NAME}"
