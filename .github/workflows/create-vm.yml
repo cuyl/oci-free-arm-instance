@@ -111,3 +111,12 @@ jobs:
             ```json
             ${{ steps.create_vm.outputs.log_data }}
             ```
+      - uses: harryzcy/action-bark@v1
+        with:
+            status: ${{ job.status }}
+            title: "OCI Bot Status"
+            body: ${{ contains(steps.create_vm.outputs.log_data, 'Out of host capacity') && '⏳ Waiting for Capacity...' || contains(steps.create_vm.outputs.log_data, 'PROVISIONING') && '🚀 VM CREATED! DISABLE WORKFLOW!' || '❌ Error' }}
+            device_key: ${{ secrets.BARK_DEVICE_KEY }}
+            level: passive # iOS notification level 'active', 'timeSensitive' or 'passive', default to 'active'
+            bark_server_url: ${{ secrets.BARK_SERVER_URL }}
+        if: always() # Pick up events even if the job fails or is canceled.
