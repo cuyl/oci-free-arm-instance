@@ -4,7 +4,6 @@ on:
   schedule:
     - cron: "*/5 * * * *"
   workflow_dispatch:
-
 env:
   # 1. Suppress warnings to keep logs clean
   SUPPRESS_LABEL_WARNING: true
@@ -25,6 +24,7 @@ env:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    environment: TEST
     steps:
       - name: Cache pip packages
         id: cache-pip
@@ -90,6 +90,7 @@ jobs:
             # We exit with 0 so GitHub does not disable the cron schedule
             exit 0
           else
+            echo $OCI_OUTPUT
             echo "❌ Real Error Detected. Failing the workflow."
             exit 1
           fi
