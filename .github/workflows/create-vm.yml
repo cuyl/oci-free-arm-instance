@@ -10,10 +10,10 @@ env:
   SUPPRESS_LABEL_WARNING: true
 
   # 2. Mumbai Configuration (Verified)
-  OCI_CLI_REGION: "ap-mumbai-1"
-  AD_NAME: "qaqb:AP-MUMBAI-1-AD-1"
-  IMAGE_ID: "ocid1.image.oc1.ap-mumbai-1.aaaaaaaahzcec4tjbvlvkptojwrc5zo4zazgdnwwyg5f5ayjpkreigtzwpxa"
-  SUBNET_ID: "ocid1.subnet.oc1.ap-mumbai-1.aaaaaaaal7czmysz7hqztjcrt72oaoipcqo6rin4w5bvq64vfrxbjtw7nx4q"
+  OCI_CLI_REGION: ${{ vars.OCI_CLI_REGION }}
+  AD_NAME: ${{ vars.AD_NAME }}
+  IMAGE_ID: ${{ vars.IMAGE_ID }}
+  SUBNET_ID: ${{ vars.SUBNET_ID }}
 
   # 3. Secrets
   COMPARTMENT_ID: ${{ secrets.OCI_COMPARTMENT_ID }}
@@ -38,7 +38,7 @@ jobs:
 
       - name: Setup OCI CLI and Try to Create VM
         id: create_vm
-        continue-on-error: true 
+        continue-on-error: true
         run: |
           set -o pipefail
 
@@ -59,7 +59,7 @@ jobs:
           echo "fingerprint=${{ secrets.OCI_CLI_FINGERPRINT }}" >> /home/runner/.oci/config
           echo "key_file=/home/runner/.oci/oci_api_key.pem" >> /home/runner/.oci/config
           echo "region=${{ env.OCI_CLI_REGION }}" >> /home/runner/.oci/config
-          
+
           # Write SSH Key
           echo "${{ secrets.SSH_PUBLIC_KEY }}" > /home/runner/my_ssh_key.pub
 
