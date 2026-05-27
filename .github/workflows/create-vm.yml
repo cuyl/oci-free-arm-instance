@@ -111,7 +111,7 @@ jobs:
             ```json
             ${{ steps.create_vm.outputs.log_data }}
             ```
-      - uses: harryzcy/action-bark@v1
+      - uses: harryzcy/action-bark@v2.3.3
         with:
             status: ${{ job.status }}
             title: "OCI Bot Status"
