@@ -117,6 +117,7 @@ jobs:
           # Determine message based on OCI output
           if echo "${{ steps.create_vm.outputs.log_data }}" | grep -q 'Out of host capacity'; then
             BARK_BODY="⏳ Waiting for Capacity..."
+            exit 0
           elif echo "${{ steps.create_vm.outputs.log_data }}" | grep -q 'PROVISIONING'; then
             BARK_BODY="🚀 VM CREATED!"
           else
