@@ -121,7 +121,7 @@ jobs:
           elif echo "${{ steps.create_vm.outputs.log_data }}" | grep -q 'PROVISIONING'; then
             BARK_BODY="🚀 VM CREATED!"
           else
-            BARK_BODY="Status: ${{ job.status }}"
+            BARK_BODY="Status: ${{ steps.create_vm.outcome }}"
           fi
           
           # URL encode the title and body
