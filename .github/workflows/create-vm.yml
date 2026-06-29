@@ -60,8 +60,16 @@ jobs:
           echo "key_file=/home/runner/.oci/oci_api_key.pem" >> /home/runner/.oci/config
           echo "region=${{ env.OCI_CLI_REGION }}" >> /home/runner/.oci/config
 
-          # Verify login
-          oci iam region list  || { echo "❌ OCI CLI Login Failed. Check your secrets and configuration."; exit 1; }
+          # Check availability of the Shape in the specified AD
+          SHAPE_CHECK=$(oci compute shape list \
+            --compartment-id "$COMPARTMENT_ID" \
+            --availability-domain "$AD_NAME" \
+            --query "data[?\"shape\"=='VM.Standard.A1.Flex']")
+          # If the shape is not available, output is a "[]" (empty array), so we check for that
+          if [ "$SHAPE_CHECK" = "[]" ]; then
+            echo "⚠️  Shape VM.Standard.A1.Flex is not available in the specified AD. Exiting..."
+            exit 0
+          fi
 
           # Write SSH Key
           echo "${{ secrets.SSH_PUBLIC_KEY }}" > /home/runner/my_ssh_key.pub
