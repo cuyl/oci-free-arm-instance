@@ -68,6 +68,9 @@ jobs:
           # If the shape is not available, output is a "[]" (empty array), so we check for that
           if [ "$SHAPE_CHECK" = "[]" ]; then
             echo "⚠️  Shape VM.Standard.A1.Flex is not available in the specified AD. Exiting..."
+            echo "log_data<<EOF" >> $GITHUB_OUTPUT
+            echo "Out of host capacity. Shape VM.Standard.A1.Flex is not available in the specified AD. " >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
             exit 0
           fi
 
